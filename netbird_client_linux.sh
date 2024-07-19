@@ -1,7 +1,6 @@
-
 #!/bin/bash
 install=
-requiredVersion="0.28.3"
+requiredVersion="0.28.5"
 minimalVersion="0.28.0"
 netbird_domain="remote.qwilt.com"
 netbird_ip="35.246.201.207"
@@ -181,4 +180,3 @@ echo "config.json Host:"
 sudo cat /etc/netbird/config.json | grep \"Host\":
 echo "SSH Config file:"
 cat $CONFIG_FILE | grep ServerAlive
-
