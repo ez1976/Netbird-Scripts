@@ -1,5 +1,5 @@
 install=
-requiredVersion="0.28.3"
+requiredVersion="0.28.5"
 minimalVersion="0.28.0"
 netbird_domain="remote.qwilt.com"
 netbird_ip="35.246.201.207"
