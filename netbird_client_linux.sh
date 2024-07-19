@@ -1,6 +1,7 @@
+
 #!/bin/bash
 install=
-requiredVersion="0.28.5"
+requiredVersion="0.28.3"
 minimalVersion="0.28.0"
 netbird_domain="remote.qwilt.com"
 netbird_ip="35.246.201.207"
@@ -14,27 +15,33 @@ homefolder=$(grep "^$logged_in_user:" /etc/passwd | cut -d: -f6)
 sed -i "/$netbird_domain/d" /etc/hosts
 echo "$netbird_ip  $netbird_domain"  | sudo tee -a /etc/hosts > /dev/null
 
-CONFIG_FILE=$homefolder/.ssh/config
-if [[ ! -d "$homefolder/.ssh" ]]; then su -c "ssh-keygen -t rsa -N '' -f $homefolder/.ssh/id_rsa" $logged_in_user;fi
 
-if [[ -z "$CONFIG_FILE" ]]
-    then 
-    # Check if "Host *" exists
-    if ! grep -q '^Host \*' "$CONFIG_FILE"; then
-        # If "Host *" does not exist, add it with the desired settings
-        echo -e "Host *\n  ServerAliveInterval 120\n  ServerAliveCountMax 15" >> "$CONFIG_FILE"
-    else
-        # If "Host *" exists, check if the settings are present
-        if ! grep -q 'ServerAliveInterval 120' "$CONFIG_FILE"; then
-            sed -i '/^Host \*/a\ \ ServerAliveInterval 120\n\ \ ServerAliveCountMax 15' "$CONFIG_FILE"
-        fi
-    fi
-    chown $logged_in_user:$logged_in_user $homefolder/.ssh/config
+if [[ ! $logged_in_user ]]
+then 
+    echo "No Users Logged In"
 else
-    echo 'Host *' > "$CONFIG_FILE"
-    echo '  ServerAliveInterval 120' >> "$CONFIG_FILE"
-    echo '   ServerAliveCountMax 15' >> "$CONFIG_FILE"
-    chown $logged_in_user:$logged_in_user $homefolder/.ssh/config
+    CONFIG_FILE=$homefolder/.ssh/config
+    if [[ ! -d "$homefolder/.ssh" ]]; then su -c "ssh-keygen -t rsa -N '' -f $homefolder/.ssh/id_rsa" $logged_in_user;fi
+
+    if [[ -z "$CONFIG_FILE" ]]
+        then 
+        # Check if "Host *" exists
+        if ! grep -q '^Host \*' "$CONFIG_FILE"; then
+            # If "Host *" does not exist, add it with the desired settings
+            echo -e "Host *\n  ServerAliveInterval 120\n  ServerAliveCountMax 15" >> "$CONFIG_FILE"
+        else
+            # If "Host *" exists, check if the settings are present
+            if ! grep -q 'ServerAliveInterval 120' "$CONFIG_FILE"; then
+                sed -i '/^Host \*/a\ \ ServerAliveInterval 120\n\ \ ServerAliveCountMax 15' "$CONFIG_FILE"
+            fi
+        fi
+        chown $logged_in_user:$logged_in_user $homefolder/.ssh/config
+    else
+        echo 'Host *' > "$CONFIG_FILE"
+        echo '  ServerAliveInterval 120' >> "$CONFIG_FILE"
+        echo '   ServerAliveCountMax 15' >> "$CONFIG_FILE"
+        chown $logged_in_user:$logged_in_user $homefolder/.ssh/config
+    fi
 fi
 
 # Define a function to update config.json and create a cloudfront script
@@ -174,5 +181,4 @@ echo "config.json Host:"
 sudo cat /etc/netbird/config.json | grep \"Host\":
 echo "SSH Config file:"
 cat $CONFIG_FILE | grep ServerAlive
-
 
