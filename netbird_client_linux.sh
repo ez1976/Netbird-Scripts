@@ -1,3 +1,4 @@
+#!/bin/bash
 install=
 requiredVersion="0.28.5"
 minimalVersion="0.28.0"
