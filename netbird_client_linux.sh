@@ -1,4 +1,3 @@
-#!/bin/bash
 install=
 requiredVersion="0.28.3"
 minimalVersion="0.28.0"
@@ -60,6 +59,20 @@ for user in $user_list; do
     sudo -u $username DISPLAY=${display:1:-1} \
                       DBUS_SESSION_BUS_ADDRESS=$dbus \
                       notify-send "Netbird Notice" "$@"
+done
+}
+run_commands_on_users () {
+
+user_list=($(who | grep -E "\(:[0-9](\.[0-9])*\)" | awk '{print $1 "@" $NF}' | sort -u))
+
+for user in $user_list; do
+    username=${user%@*}
+    display=${user#*@}
+    dbus=unix:path=/run/user/$(id -u $username)/bus
+
+    sudo -u $username DISPLAY=${display:1:-1} \
+                      DBUS_SESSION_BUS_ADDRESS=$dbus \
+                      "$@" &
 done
 }
 
@@ -150,8 +163,9 @@ then
     /usr/bin/netbird service install  > /dev/null 2>&1
     /usr/bin/netbird service start   > /dev/null 2>&1
 
-    sudo -u $logged_in_user DISPLAY=$display netbird-ui &
 fi # finished installing and configuring the client
+
+run_commands_on_users netbird-ui
 
 echo "Host file:"
 cat /etc/hosts | grep $netbird_domain
@@ -159,4 +173,5 @@ echo "config.json Host:"
 sudo cat /etc/netbird/config.json | grep \"Host\":
 echo "SSH Config file:"
 cat $CONFIG_FILE | grep ServerAlive
+
 
