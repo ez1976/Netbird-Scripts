@@ -249,6 +249,21 @@ if (-not (Get-Command netbird -ErrorAction SilentlyContinue)) {
         & 'C:\Program Files\Netbird\netbird.exe' service restart 
     }
 
+    # Check if the file contains the string 'netbird.io'
+    if (Test-Path C:\ProgramData\Netbird\config.json) {
+        $configContent = Get-Content C:\ProgramData\Netbird\config.json -Raw
+        if ($configContent -match "netbird.io") {
+            Stop-Service -Name "NetBird" > $null 2>&1
+            rm C:\ProgramData\Netbird\config.json
+            Start-Service -Name "NetBird" > $null 2>&1
+            sleep 5
+            configure_netbird_show_icon
+            sleep 5
+            configure_netbird
+            sleep 5
+            & 'C:\Program Files\Netbird\netbird.exe' service restart 
+        }
+    }
 
     if ($netbirdStatus -match "Management: Disconnected" -or $netbirdStatus -match "YOUR_MANAGEMENT_URL") {
         Write-Host "Netbird is installed but not connected, verifying version and connecting..."
