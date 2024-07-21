@@ -1,4 +1,3 @@
-
 # Define the required version
 $requiredVersion = "0.28.5"
 $minimalVersion = [version]"0.28.1"
@@ -113,7 +112,9 @@ W11_TrayNotify -AppList @("netbird-ui") -Action Unhide
     $currentUserSession = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
     # set to run after computer resumes from sleep
     # Define variables
-    
+}
+function configure_netbird {
+
     # Set to run after computer resumes from sleep
     # Define variables
     $taskName = "Run netbird on Resume"
@@ -178,6 +179,9 @@ if (-not (Get-Command netbird -ErrorAction SilentlyContinue)) {
     InstallNetbird
     sleep 10
     configure_netbird_show_icon
+    sleep 5
+    configure_netbird
+
 
 } else {
     configure_netbird_show_icon # updating start_script file
@@ -223,7 +227,10 @@ if (-not (Get-Command netbird -ErrorAction SilentlyContinue)) {
         InstallNetbird
         Start-Sleep -Seconds 5
         & 'C:\Program Files\Netbird\netbird.exe' service restart
-    }
+        configure_netbird_show_icon
+        sleep 5
+        configure_netbird
+        }
     # Check if the output contains "Management: Disconnected" or "YOUR_MANAGEMENT_URL"
 
     # Get Netbird status
@@ -234,6 +241,11 @@ if (-not (Get-Command netbird -ErrorAction SilentlyContinue)) {
         Stop-Service -Name "NetBird" > $null 2>&1
         rm C:\ProgramData\Netbird\config.json
         Start-Service -Name "NetBird" > $null 2>&1
+        sleep 5
+        configure_netbird_show_icon
+        sleep 5
+        configure_netbird
+        sleep 5
         & 'C:\Program Files\Netbird\netbird.exe' service restart 
     }
 
@@ -252,6 +264,11 @@ if (-not (Get-Command netbird -ErrorAction SilentlyContinue)) {
             Stop-Service -Name "NetBird" > $null 2>&1
             rm C:\ProgramData\Netbird\config.json  > $null 2>&1
             InstallNetbird
+            sleep 5
+            configure_netbird_show_icon
+            sleep 5
+            configure_netbird
+            sleep 5
             & 'C:\Program Files\Netbird\netbird.exe' service restart
         }
         
