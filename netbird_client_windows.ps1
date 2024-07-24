@@ -1,5 +1,5 @@
 # Define the required version
-$requiredVersion = "0.28.5"
+$requiredVersion = "0.28.6"
 $minimalVersion = [version]"0.28.1"
 $netbird_domain = "remote.qwilt.com"
 $netbird_device_port = "33073"
